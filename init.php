@@ -23,7 +23,7 @@ Worker::$pidFile = PATH .'/logs/process.pid';
 $worker = new Worker();
 
 //主进程名称
-$worker->name = 'sosobtc_process';
+$worker->name = 'process';
 
 //子进程数量
 $worker->count = count($taskConf);

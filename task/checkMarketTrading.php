@@ -191,16 +191,15 @@ class checkMarketTrading
     * okexbtcindexavg   指标平均
     * email 邮件
     */
-    public function loop2(){
+    public function loop2()
+    {
         $redis = new Redis();
         $redis->connect(REDIS_HOST, REDIS_PORT);
         $redis->select(1);
         $cycleList = $this->cycleList;
 
 
-
     }
-
 
 
     // 与前面的柱子面积进行比较  判断背驰
@@ -376,21 +375,21 @@ class checkMarketTrading
                 if ($v >= 15) {
                     require_once PATH . '/lib/SendEmail.php';
                     $email = new SendEmail();
-                    if ($aa0[4] >0){
+                    if ($aa0[4] > 0) {
                         $mn = '空';
-                    }else{
+                    } else {
                         $mn = '多';
                     }
-                    
+
                     if ($v >= 60 * 24) {
-                        $v = $v/(60 * 24) . '天';
-                    }elseif ($v >= 60) {
-                        $v = $v/60 . '小时';
+                        $v = $v / (60 * 24) . '天';
+                    } elseif ($v >= 60) {
+                        $v = $v / 60 . '小时';
                     }
-                    $subject= $v . '_背离提醒_' . $mn;
-                    $email->send_('1311684648@qq.com',$subject , implode(" | ", $e));
+                    $subject = $v . '_背离提醒_' . $mn;
+                    $email->send_('1311684648@qq.com', $subject, implode(" | ", $e));
                 }
-                
+
 
                 $redis->zadd('email', $aa0[5], implode(" | ", $e));
                 echo "ok" . "\n";
@@ -401,9 +400,6 @@ class checkMarketTrading
         }
 
     }
-
-
-    
 
 
 }
