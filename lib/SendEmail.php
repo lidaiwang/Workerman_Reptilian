@@ -6,10 +6,10 @@ class SendEmail
     //发件人邮箱
     private $address = array(
         array(
-            'showname' => 'aicoin ews notification',
-            'name' => 'noreply@aicoin.com',
-            'username' => 'AKIAJAOU2AUQJTENEVTQ',
-            'pwd' => 'AvGVl3STGyFB4Qes8QnLumznK7i8Dd3+aK6KYcSapudV')
+            'showname' => 'an',
+            'name' => 'n',
+            'username' => 'AKQ',
+            'pwd' => 'AV')
     );
 
     /**
@@ -49,7 +49,7 @@ class SendEmail
         $mail->Host = "smtp.163.com";// 发送方的SMTP服务器地址
         $mail->SMTPAuth = true;// 是否使用身份验证
         $mail->Username = "lidaiwangtime@163.com";// 发送方的163邮箱用户名
-        $mail->Password = "wang1234";// 发送方的邮箱密码，注意用163邮箱这里填写的是“客户端授权密码”而不是邮箱的登录密码！
+        $mail->Password = "";// 发送方的邮箱密码，注意用163邮箱这里填写的是“客户端授权密码”而不是邮箱的登录密码！
         $mail->SMTPSecure = "ssl";// 使用ssl协议方式
         $mail->Port = 994;// 163邮箱的ssl协议方式端口号是465/994
         $mail->From= "lidaiwangtime";
