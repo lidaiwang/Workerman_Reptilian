@@ -1,13 +1,7 @@
 <?php
 class Message{
-	
 	private $conf = array(
-			'account'		=> '101100-WEB-HUAX-065531',
-			'pwd'			=> 'ZDBNDFJG',
-			'msgUrl'		=> 'http://www.stongnet.com/sdkhttp/sendsms.aspx',
-			'balanceUrl'	=> 'http://www.stongnet.com/sdkhttp/getbalance.aspx',
-			'reportUrl'		=> 'http://www.stongnet.com/sdkhttp/getmtreport.aspx',
-			'pwdUrl'		=> 'http://www.stongnet.com/sdkhttp/uptpwd.aspx',
+
 	);
 	
 	/**

@@ -2,13 +2,9 @@
 
 class checkMarketTrading
 {
-//    private $redis = null;
-//    private $email = null;
-//    private $notice_email = null;
+
     private $num = 0;
     private $cycleList = array(5, 10, 15, 30, 60, 120, 240, 360, 720, 1440, 4320, 10080, 43200);
-    // 13
-
 
     /*
      * okexbtc:*   开高低收
@@ -18,7 +14,6 @@ class checkMarketTrading
      * okexbtcindexavg   指标平均
      * email 邮件
      */
-
     public function __construct()
     {
 //        $this->redis = new Redis();
@@ -54,10 +49,6 @@ class checkMarketTrading
         $v = $cycleList[$flag];
         fwrite($client, '{"coin": ' . '"' . $v . '", "cycle": ' . $v . ', "last_trade_list": ' . $v . "}\n");
 
-//        foreach ($cycleList as $k => $v){
-//            fwrite($client, '{"coin": ' . '"' . $v . '", "cycle": ' . $v . ', "last_trade_list": ' . $v . "}\n");
-//        }
-        //fwrite($client, '{"market": ' . '"' . $key . '", "aicoin_trade_list": ' . $aicoin_trade_list . ', "last_trade_list": ' . $last_trade_list . "}\n");
     }
 
 
@@ -197,8 +188,6 @@ class checkMarketTrading
         $redis->connect(REDIS_HOST, REDIS_PORT);
         $redis->select(1);
         $cycleList = $this->cycleList;
-
-
     }
 
 
@@ -310,12 +299,6 @@ class checkMarketTrading
                 }
             }
 
-
-            //  每一小段的具体 macd 的心
-//            $macd_order = [];
-            // 每一个小段的平均值  最大 最小  面积  平均值
-//            $i = [];
-
             //取最新的一个类型的柱子
             $new_max = $i[0][0];
 //            $new_min = $i[0][1];
@@ -358,8 +341,6 @@ class checkMarketTrading
 
                 // 高点降低  面积减少  数量减少
                 if ($new_num_ < 7 || abs($new_max_) < abs($new_max) || abs($new_sum_) < abs($new_sum) * 2 || $new_num_ < $new_num * 2) {
-                    // echo date('Y-m-d H:i:s',time()) . '_ ' . $v . "$new_num_ < 7 _ $new_max_ < $new_max _ $new_sum_ < $new_num _ $new_num_ < $new_num * 2" . "\n";
-//                    echo "\n";
                     echo date('Y-m-d H:i:s', $aa0[5]) . '__ ' . $v . '/' . $k0 / 2 . ' __' . implode('|', $i[0]) . '  __  ' . implode('|', $i[$k0]) . "\n";
                     continue;
                 }
@@ -396,11 +377,8 @@ class checkMarketTrading
                 echo date('Y-m-d H:i:s', $aa0[5]) . ' _ ' . $v . '/' . $k0 / 2 . ' _ ' . implode("|", $e) . "\n";
                 break;
             }
-
         }
-
     }
-
 
 }
 

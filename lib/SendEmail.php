@@ -6,10 +6,10 @@ class SendEmail
     //发件人邮箱
     private $address = array(
         array(
-            'showname' => 'an',
-            'name' => 'n',
-            'username' => 'AKQ',
-            'pwd' => 'AV')
+            'showname' => '',
+            'name' => '',
+            'username' => '',
+            'pwd' => '')
     );
 
     /**
@@ -21,7 +21,7 @@ class SendEmail
 //        require_once "Email/class.phpmailer.php";
 //        $mail = new PHPMailer();
 //        $mail->IsSMTP();                                    // 使用SMTP方式发送
-//        $mail->Host = 'email-smtp.us-east-1.amazonaws.com';                    //smtp服务器名
+//        $mail->Host = 'emaws.com';                    //smtp服务器名
 //        $mail->SMTPAuth = true;                                // 启用SMTP验证功能
 //        $mail->SMTPSecure = 'ssl';
 //        $count = count($this->address);
