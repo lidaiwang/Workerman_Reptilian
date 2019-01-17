@@ -1,15 +1,14 @@
 <?php
 
-const REDIS_HOST = '134.175.93.90';
+const REDIS_HOST = '127.0.0.1';
 const REDIS_PORT = 6379;
-const REDIS_PSW = 'a3d24b55';
+const REDIS_PSW = '127.0.0.1';
 
-
-const DB_HOST = '134.175.93.90';
-const DB_NAME = 'root';
+const DB_HOST = '127.0.0.1';
+const DB_NAME = '127.0.0.1';
 const DB_PORT = 3306;
-const DB_BASE = 'k_line_dev';
-const DB_PSW = 'a3d24b55';
+const DB_BASE = '127.0.0.1';
+const DB_PSW = '127.0.0.1';
 
 const REDIS_CONF = [
     //主从数据库
@@ -50,7 +49,7 @@ const DBCONF = [
     ),
 ];
 
-//平台的交易对监测
+
 define('MARKET_TRADE_LOOP_TIME', 300);
 define('NOTICE_EMAIL', 'lidaiwangtime@163.com');
 define('MARKET_TRADE_PORT', 2355);

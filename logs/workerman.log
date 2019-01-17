@@ -1,0 +1,24 @@
+2019-01-17 21:24:24 pid:1 Worker process terminated with ERROR: E_ERROR "Uncaught Error: Call to a member function warning() on boolean in D:\zend\workerman_reptilian\task\pushQueue.php:82
+Stack trace:
+#0 [internal function]: pushQueue->loopRun()
+#1 D:\zend\workerman_reptilian\vendor\workerman\workerman\Events\Select.php(239): call_user_func_array(Array, Array)
+#2 D:\zend\workerman_reptilian\vendor\workerman\workerman\Events\Select.php(282): Workerman\Events\Select->tick()
+#3 D:\zend\workerman_reptilian\vendor\workerman\workerman\Worker.php(2321): Workerman\Events\Select->loop()
+#4 D:\zend\workerman_reptilian\vendor\workerman\workerman\Worker.php(1315): Workerman\Worker->run()
+#5 D:\zend\workerman_reptilian\vendor\workerman\workerman\Worker.php(1258): Workerman\Worker::forkWorkersForWindows()
+#6 D:\zend\workerman_reptilian\vendor\workerman\workerman\Worker.php(507): Workerman\Worker::forkWorkers()
+#7 D:\zend\workerman_reptilian\init.php(45): Workerman\Worker::runAll()
+#8 {main}
+  thrown in D:\zend\workerman_reptilian\task\pushQueue.php on line 82"
+2019-01-17 21:24:42 pid:1 Worker process terminated with ERROR: E_ERROR "Uncaught Error: Call to a member function warning() on boolean in D:\zend\workerman_reptilian\task\pushQueue.php:82
+Stack trace:
+#0 [internal function]: pushQueue->loopRun()
+#1 D:\zend\workerman_reptilian\vendor\workerman\workerman\Events\Select.php(239): call_user_func_array(Array, Array)
+#2 D:\zend\workerman_reptilian\vendor\workerman\workerman\Events\Select.php(282): Workerman\Events\Select->tick()
+#3 D:\zend\workerman_reptilian\vendor\workerman\workerman\Worker.php(2321): Workerman\Events\Select->loop()
+#4 D:\zend\workerman_reptilian\vendor\workerman\workerman\Worker.php(1315): Workerman\Worker->run()
+#5 D:\zend\workerman_reptilian\vendor\workerman\workerman\Worker.php(1258): Workerman\Worker::forkWorkersForWindows()
+#6 D:\zend\workerman_reptilian\vendor\workerman\workerman\Worker.php(507): Workerman\Worker::forkWorkers()
+#7 D:\zend\workerman_reptilian\init.php(45): Workerman\Worker::runAll()
+#8 {main}
+  thrown in D:\zend\workerman_reptilian\task\pushQueue.php on line 82"

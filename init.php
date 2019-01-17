@@ -8,7 +8,7 @@ use Workerman\Lib\Timer;
 
 require_once PATH .'/vendor/workerman/workerman/Autoloader.php';
 require_once PATH .'/conf/config.php';
-require_once PATH .'/lib/Log.php';
+require_once PATH . '/lib/Logs.php';
 require_once PATH .'/lib/Gateway.php';
 require_once PATH .'/lib/SendEmail.php';
 require_once PATH .'/lib/Message.php';
