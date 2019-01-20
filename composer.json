@@ -1,5 +1,6 @@
 {
     "require": {
-        "workerman/workerman": "^3.5"
+        "workerman/workerman": "^3.5",
+        "thingengineer/mysqli-database-class": "dev-master"
     }
 }

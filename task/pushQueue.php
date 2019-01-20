@@ -156,8 +156,8 @@ class pushQueue
                 && (!isset($data['last_time']) || (isset($data['last_time']) && ($now_time - $data['last_time'] > 45)))) {
 
                 $task_data = $value;
-                $task_data['last_time'] = $data['last_time'];
-                $task_data['key_last_time'] = $data[$key];
+                $task_data['last_time'] = isset($data['last_time']) ? $data['last_time'] : $now_time;
+                $task_data['key_last_time'] = isset($data[$key]) ? $data[$key] : $now_time;
 
                 $data['key_last_time'] = $now_time;
                 $data['last_time'] = $now_time;
@@ -166,7 +166,8 @@ class pushQueue
                 $point = 5;
                 break;
             } else {
-                $remark = $now_time - $data[$key];
+                $key_value = isset($data[$key]) ? $data[$key] : $now_time;
+                $remark = $now_time - $key_value;
                 $remark .= ' | ';
                 $remark .= $period * 60 / 10;
 //                Loggers::getInstance("service")->warning('间隔时间未达到要求 || ' . json_encode(array('$data' => $data, '$value' => $value, 'key' => $key, '$now_time' => $now_time, '$now_date' => $now_date, 'remark' => $remark)));

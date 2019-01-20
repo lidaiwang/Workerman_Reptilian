@@ -47,7 +47,7 @@ $market_trade_worker->onMessage = function ($connection, $data) use ($market_tra
 
     $result = Http::curlPost($url, $queryparas, $postdata, $header, $timeout);
 
-    if (isset($result['status_code']) && $result['status_code'] == 200 && !empty($result['body'])) {
+    if (isset($result['status_code']) && $result['status_code'] == 200 && !empty($result['body']) && is_array($result['body']['data']['kline_data'])) {
         $kline_data = $result['body']['data']['kline_data'];
         $keys = 'origin:' . $symbol . ':' . $period;
         $table_name = "k_line_origin";
