@@ -9,7 +9,7 @@ require PATH . '/lib/logs/Log.php';
 require PATH . '/lib/logs/FileLog.php';
 require PATH . '/lib/logs/Loggers.php';
 
-
+require PATH . '/lib/SendEmail.php';
 
 
 const MASTER_KEY = 'masters';

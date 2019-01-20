@@ -15,6 +15,21 @@ class pushQueue
     public $data = array();
     public $redis;
     public $db;
+    //分钟
+    public $period_list = array(
+        1,
+        3,
+        5,
+        10,
+        15,
+        30,
+        60,
+        120,
+        240,
+        360,
+        720,
+        1440,
+    );
 
     public function __construct()
     {
@@ -32,46 +47,22 @@ class pushQueue
     {
         $this->conf = array(
             array(
-                'symbol' => 'btc',
-                //分钟
-                'period_list' => array(
-                    1,
-                    3,
-                    5,
-                    10,
-                    15,
-                    30,
-                    60,
-                    120,
-                    240,
-                    360,
-                    720,
-                    1440,
-                ),
+                'name' => 'btc',
+                'symbol' => 'btcquarter:okcoinfutures',
+                'period_list' => $this->period_list,
             ),
-
             array(
-                'symbol' => 'eos',
-                //分钟
-                'period_list' => array(
-                    1,
-                    3,
-                    5,
-                    10,
-                    15,
-                    30,
-                    60,
-                    120,
-                    240,
-                    360,
-                    720,
-                    1440,
-                ),
+                'name' => 'eos',
+                'symbol' => 'eosquarter:okex',
+                'period_list' => $this->period_list,
             ),
-
+            array(
+                'name' => 'eth',
+                'symbol' => 'ethquarter:okex',
+                'period_list' => $this->period_list,
+            ),
         );
     }
-
 
     /*
      * 1s运行一次  判断分发加上计算任务
@@ -79,11 +70,11 @@ class pushQueue
      */
     public function loopRun()
     {
-
         $key = 'redis_Queue';
-        $queue_leng = 1000;
+        $queue_leng = 20;
 
         $now_time = time();
+        $now_date = date("Y-m-d H:i:s", $now_time);
         $redis = $this->redis;
         $data = $this->data;
         $conf = $this->conf;
@@ -101,14 +92,15 @@ class pushQueue
             foreach ($conf as $k => $v) {
                 $symbol = $v['symbol'];
                 foreach ($v['period_list'] as $kk => $vv) {
-                    //队列时间  25 - 55s
-                    $time_interval = 15 + mt_rand(20, 45);
+                    //队列时间
+                    $time_interval = 25 + mt_rand(12, 77);
                     $time = $time + $time_interval;
 
                     $postdata = array(
                         'symbol' => $symbol,
                         'period' => $vv,
                         'time' => $time,
+                        'date' => date("Y-m-d H:i:s", $time),
                     );
 
                     $pipe->zAdd($key, $time, json_encode($postdata));
@@ -125,20 +117,28 @@ class pushQueue
         while ($i > 0) {
             $i++;
             if ($i > 10) {
+//                Loggers::getInstance("service")->warning('规定数量内没有达到条件');
                 $point = 2;
                 break;
             }
 
-            $time_block = $redis->zRange($key, -1, -1, true);
+            $time_block = $redis->zRange($key, 0, 0, true);
+            $time_block_ = $redis->zRange($key, 0, -1, true);
             if (empty($time_block)) {
+                $t = array(
+                    '$time_block' => $time_block,
+                    '$time_block_' => $time_block_,
+                );
+//                Loggers::getInstance("service")->warning('队列为空 || ' . json_encode($t));
                 $point = 3;
                 break;
             }
             $time = array_values($time_block)[0];
             $value = array_keys($time_block)[0];
 
-            //最后一个单元时间小于当前时间
-            if ($now_time > $time) {
+            //当前时间大于最后一个单元时间
+            if ($now_time < $time) {
+//                Loggers::getInstance("service")->warning('队列尾部时间大于当前时间');
                 $point = 4;
                 break;
             } else {
@@ -150,22 +150,34 @@ class pushQueue
             $period = $value['period'];
             $key = $symbol . $period;
 
-
             //  当前时间  减去  上次请求时间   大于周期的10%  1分钟=6s
-            if (!isset($data[$key]) || (isset($data[$key]) && $now_time - $data[$key]) > $period * 60 / 10) {
-                $data[$key] = $now_time;
+            // 最小间隔时间45s
+            if ((!isset($data[$key]) || (isset($data[$key]) && ($now_time - $data[$key]) > $period * 60 / 10))
+                && (!isset($data['last_time']) || (isset($data['last_time']) && ($now_time - $data['last_time'] > 45)))) {
+
                 $task_data = $value;
+                $task_data['last_time'] = $data['last_time'];
+                $task_data['key_last_time'] = $data[$key];
+
+                $data['key_last_time'] = $now_time;
+                $data['last_time'] = $now_time;
+
                 $flag = true;
                 $point = 5;
                 break;
+            } else {
+                $remark = $now_time - $data[$key];
+                $remark .= ' | ';
+                $remark .= $period * 60 / 10;
+//                Loggers::getInstance("service")->warning('间隔时间未达到要求 || ' . json_encode(array('$data' => $data, '$value' => $value, 'key' => $key, '$now_time' => $now_time, '$now_date' => $now_date, 'remark' => $remark)));
             }
-
-            Loggers::getInstance("service")->warning(json_encode(array('$data' => $data, '$value' => $value, 'key' => $key, '$now_time' => $now_time)));
         }
 
         //添加任务
         if ($flag) {
             $task_data['point'] = $point;
+            $task_data['$now_time'] = $now_time;
+            $task_data['$now_date'] = $now_date;
 
             $str = '{';
             foreach ($task_data as $k => $v) {
@@ -177,17 +189,11 @@ class pushQueue
             $client = stream_socket_client("tcp://" . MARKET_TRADE_CONNECT_IP . ":" . MARKET_TRADE_PORT);
             fwrite($client, $str);
 
-            Loggers::getInstance("service")->warning(json_encode($task_data));
+//            Loggers::getInstance("service")->warning('达到要求-数据 ||  ' . json_encode($task_data));
         }
 
         $this->data = $data;
 
-        $this->aa();
-    }
-
-    //计算
-    public function aa()
-    {
     }
 
     //加锁
@@ -214,7 +220,5 @@ class pushQueue
         }
         return false;
     }
-
-
 }
 
