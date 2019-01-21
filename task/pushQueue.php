@@ -100,23 +100,24 @@ class pushQueue
             foreach ($conf as $k => $v) {
                 $symbol = $v['symbol'];
                 foreach ($v['period_list'] as $kk => $vv) {
-                    //队列时间
-                    $time_interval = 25 + mt_rand(12, 77);
-                    $time = $time + $time_interval;
                     $period = $vv;
+                    $key_str = $symbol . $period;
+                    $key_min_time = $period * 60 / 20;
 
-                    $postdata = array(
-                        'symbol' => $symbol,
-                        'period' => $period,
-                        'time' => $time,
-                        'date' => date("Y-m-d H:i:s", $time),
-                    );
-
-                    $key_str = $symbol . $vv;
-                    if ((!isset($push_data[$key_str]) || (isset($push_data[$key_str]) && ($now_time - $push_data[$key_str]) > $period * 60 / 10))
+                    if ((!isset($push_data[$key_str]) || (isset($push_data[$key_str]) && ($now_time - $push_data[$key_str]) > $key_min_time))
                         && (1 == 1)) {
                         $push_data[$key_str] = $now_time;
 
+                        //队列时间
+                        $time_interval = 25 + mt_rand(12, 77);
+                        $time = $time + $time_interval;
+
+                        $postdata = array(
+                            'symbol' => $symbol,
+                            'period' => $period,
+                            'time' => $time,
+                            'date' => date("Y-m-d H:i:s", $time),
+                        );
                         $pipe->zAdd($key, $time, json_encode($postdata));
                     }
                 }
@@ -162,8 +163,10 @@ class pushQueue
 
             //  当前时间  减去  上次请求时间   大于周期的10%  1分钟=6s
             // 最小间隔时间45s
-            if ((!isset($data[$key_str]) || (isset($data[$key_str]) && ($now_time - $data[$key_str]) > $period * 60 / 10))
-                && (!isset($data['last_time']) || (isset($data['last_time']) && ($now_time - $data['last_time'] > 45)))) {
+            $min_time = 45;
+            $key_min_time = $period * 60 / 15;
+            if ((!isset($data[$key_str]) || (isset($data[$key_str]) && ($now_time - $data[$key_str]) > $key_min_time))
+                && (!isset($data['last_time']) || (isset($data['last_time']) && ($now_time - $data['last_time'] > $min_time)))) {
 
                 $task_data = $value;
                 $task_data['last_time'] = isset($data['last_time']) ? $data['last_time'] : $now_time;
