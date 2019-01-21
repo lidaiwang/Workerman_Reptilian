@@ -109,6 +109,7 @@ class pushQueue
                         $push_data[$key_str] = $now_time;
 
                         //队列时间
+                        mt_srand();
                         $time_interval = 25 + mt_rand(12, 77);
                         $time = $time + $time_interval;
 
