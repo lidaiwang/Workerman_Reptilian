@@ -17,11 +17,11 @@ class pushQueue
     public $db;
     //分钟
     public $period_list = array(
-        1,
-        3,
+//        1,
+//        3,
         5,
         10,
-        15,
+//        15,
         30,
         60,
         120,
@@ -46,21 +46,21 @@ class pushQueue
     public function setConf()
     {
         $this->conf = array(
-            array(
-                'name' => 'btc',
-                'symbol' => 'btcquarter:okcoinfutures',
-                'period_list' => $this->period_list,
-            ),
+//            array(
+//                'name' => 'btc',
+//                'symbol' => 'btcquarter:okcoinfutures',
+//                'period_list' => $this->period_list,
+//            ),
             array(
                 'name' => 'eos',
                 'symbol' => 'eosquarter:okex',
                 'period_list' => $this->period_list,
             ),
-            array(
-                'name' => 'eth',
-                'symbol' => 'ethquarter:okex',
-                'period_list' => $this->period_list,
-            ),
+//            array(
+//                'name' => 'eth',
+//                'symbol' => 'ethquarter:okex',
+//                'period_list' => $this->period_list,
+//            ),
         );
     }
 
@@ -70,15 +70,23 @@ class pushQueue
      */
     public function loopRun()
     {
-        $key = 'redis_Queue';
+        $key = 'redis_queue';
+        $redis_pull_push = 'redis_pull_push';
         $queue_leng = 20;
 
         $now_time = time();
         $now_date = date("Y-m-d H:i:s", $now_time);
         $redis = $this->redis;
-        $data = $this->data;
+//        $data = $this->data;
         $conf = $this->conf;
         $redis_key_leng = $redis->zCard($key);
+        $pull_push_data = $redis->get($redis_pull_push);
+        $pull_push_data = json_decode($pull_push_data, true);
+        if (empty($pull_push_data) || !is_array($pull_push_data)) {
+            $pull_push_data = array();
+        }
+        $data = (isset($pull_push_data['pull']) && is_array($pull_push_data['pull'])) ? $pull_push_data['pull'] : array();
+        $push_data = (isset($pull_push_data['push']) && is_array($pull_push_data['push'])) ? $pull_push_data['push'] : array();
 
         //添加队列
         if ($redis_key_leng < $queue_leng) {
@@ -95,15 +103,22 @@ class pushQueue
                     //队列时间
                     $time_interval = 25 + mt_rand(12, 77);
                     $time = $time + $time_interval;
+                    $period = $vv;
 
                     $postdata = array(
                         'symbol' => $symbol,
-                        'period' => $vv,
+                        'period' => $period,
                         'time' => $time,
                         'date' => date("Y-m-d H:i:s", $time),
                     );
 
-                    $pipe->zAdd($key, $time, json_encode($postdata));
+                    $key_str = $symbol . $vv;
+                    if ((!isset($push_data[$key_str]) || (isset($push_data[$key_str]) && ($now_time - $push_data[$key_str]) > $period * 60 / 10))
+                        && (1 == 1)) {
+                        $push_data[$key_str] = $now_time;
+
+                        $pipe->zAdd($key, $time, json_encode($postdata));
+                    }
                 }
             }
             $pipe->exec();
@@ -123,13 +138,8 @@ class pushQueue
             }
 
             $time_block = $redis->zRange($key, 0, 0, true);
-            $time_block_ = $redis->zRange($key, 0, -1, true);
             if (empty($time_block)) {
-                $t = array(
-                    '$time_block' => $time_block,
-                    '$time_block_' => $time_block_,
-                );
-//                Loggers::getInstance("service")->warning('队列为空 || ' . json_encode($t));
+//                Loggers::getInstance("service")->warning('队列为空 || ' );
                 $point = 3;
                 break;
             }
@@ -148,25 +158,25 @@ class pushQueue
             $value = json_decode($value, 1);
             $symbol = $value['symbol'];
             $period = $value['period'];
-            $key = $symbol . $period;
+            $key_str = $symbol . $period;
 
             //  当前时间  减去  上次请求时间   大于周期的10%  1分钟=6s
             // 最小间隔时间45s
-            if ((!isset($data[$key]) || (isset($data[$key]) && ($now_time - $data[$key]) > $period * 60 / 10))
+            if ((!isset($data[$key_str]) || (isset($data[$key_str]) && ($now_time - $data[$key_str]) > $period * 60 / 10))
                 && (!isset($data['last_time']) || (isset($data['last_time']) && ($now_time - $data['last_time'] > 45)))) {
 
                 $task_data = $value;
                 $task_data['last_time'] = isset($data['last_time']) ? $data['last_time'] : $now_time;
-                $task_data['key_last_time'] = isset($data[$key]) ? $data[$key] : $now_time;
+                $task_data[$key_str] = isset($data[$key_str]) ? $data[$key_str] : $now_time;
 
-                $data['key_last_time'] = $now_time;
+                $data[$key_str] = $now_time;
                 $data['last_time'] = $now_time;
 
                 $flag = true;
                 $point = 5;
                 break;
             } else {
-                $key_value = isset($data[$key]) ? $data[$key] : $now_time;
+                $key_value = isset($data[$key_str]) ? $data[$key_str] : $now_time;
                 $remark = $now_time - $key_value;
                 $remark .= ' | ';
                 $remark .= $period * 60 / 10;
@@ -193,8 +203,10 @@ class pushQueue
 //            Loggers::getInstance("service")->warning('达到要求-数据 ||  ' . json_encode($task_data));
         }
 
-        $this->data = $data;
+        $pull_push_data['pull'] = $data;
+        $pull_push_data['push'] = $push_data;
 
+        $redis->set($redis_pull_push, json_encode($pull_push_data));
     }
 
     //加锁

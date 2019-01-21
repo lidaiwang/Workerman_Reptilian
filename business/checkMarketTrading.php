@@ -26,8 +26,12 @@ $market_trade_worker->onWorkerStart = function ($market_trade_worker) {
 
 $market_trade_worker->onMessage = function ($connection, $data) use ($market_trade_worker) {
     Loggers::getInstance("service")->warning($data);
-
     $redis = $market_trade_worker->redis;
+
+    $redis->set('run_incr_time', date('Y-m-d H:i:s'));
+
+    return;
+
     $db = $market_trade_worker->db;
     $data = json_decode($data, true);
     $period = $data['symbol'];
