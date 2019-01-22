@@ -17,8 +17,8 @@ class SendEmail
     {
         $HOME_PATH = dirname(dirname(__FILE__));
         require_once $HOME_PATH . "/conf/config.php";
-        require_once HOME_PATH . "/libs/Email/class.phpmailer.php";
-        require_once HOME_PATH . "/libs/Email/class.smtp.php";
+        require_once $HOME_PATH . "/lib/Email/class.phpmailer.php";
+        require_once $HOME_PATH . "/lib/Email/class.smtp.php";
 
         $this->log = Loggers::getInstance("run");
     }

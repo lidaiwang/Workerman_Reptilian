@@ -524,7 +524,7 @@ class Line
             'cut_off_data' => $cut_off_data,
             'index_data' => $index_data,
         );
-        $this->log->warning("日志", -1, $spu);
+//        $this->log->warning("日志", -1, json_encode($spu));
 
         return $select_data;
     }

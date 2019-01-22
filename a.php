@@ -26,7 +26,22 @@ $last_block_mysql = $db
     ->orderBy("id", "Desc")
     ->getOne($table_name);
 
-var_dump($last_block_mysql);
+$time = time();
+$msqRecord[] = array(
+    'symbol' => 2,
+    'period' => 2,
+    'time' => $time,
+    'open' => 2,
+    'high' => 1,
+    'low' => 1,
+    'receive' => 1,
+    'date' => date("Y-m-d H:i:s"),
+    'add_time' => date("Y-m-d H:i:s"),
+);
+
+$re = $db->insertMulti($table_name, $msqRecord);
+
+var_dump($re);
 exit;
 
 

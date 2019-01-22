@@ -162,7 +162,7 @@ class pushQueue
             $period = $value['period'];
             $key_str = $symbol . $period;
 
-            //  当前时间  减去  上次请求时间   大于周期的10%  1分钟=6s
+            //  当前时间  减去  上次请求时间   大于周期的%  1分钟=6s
             // 最小间隔时间45s
             $min_time = 45;
             $key_min_time = $period * 60 / 15;

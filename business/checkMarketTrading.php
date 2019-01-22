@@ -30,11 +30,11 @@ $market_trade_worker->onMessage = function ($connection, $data) use ($market_tra
     $redis->set('run_incr_time', date('Y-m-d H:i:s'));
     $db = $market_trade_worker->db;
     $data = json_decode($data, true);
-    $period = $data['symbol'];
-    $symbol = $data['period'];
+    $period = $data['period'];
+    $symbol = $data['symbol'];
     $postdata = array(
-        'symbol' => $period,
-        'period' => $symbol,
+        'period' => $period,
+        'symbol' => $symbol,
     );
 
     $url = "https://www.aicoin.net.cn/api/chart/kline/data/period";
@@ -47,7 +47,8 @@ $market_trade_worker->onMessage = function ($connection, $data) use ($market_tra
 
     $result = Http::curlPost($url, $queryparas, $postdata, $header, $timeout);
 
-    if (isset($result['status_code']) && $result['status_code'] == 200 && !empty($result['body']) && is_array($result['body']['data']['kline_data'])) {
+    if (isset($result['status_code']) && $result['status_code'] == 200 && !empty($result['body'])
+        && isset($result['body']['data']['kline_data']) && is_array($result['body']['data']['kline_data'])) {
         $kline_data = $result['body']['data']['kline_data'];
         $keys = 'origin:' . $symbol . ':' . $period;
         $table_name = "k_line_origin";
@@ -95,12 +96,12 @@ $market_trade_worker->onMessage = function ($connection, $data) use ($market_tra
             }
         }
 
-        $db->insertMulti($table_name, $msqRecord);
+        $re = $db->insertMulti($table_name, $msqRecord);
         $pipe->exec();
-        return array_reverse($kline_data);
+//        return array_reverse($kline_data);
     } else {
-        Loggers::getInstance("error")->warning("错误", -1, $result);
-        return $result;
+        Loggers::getInstance("error")->warning("错误", -1, json_encode($result));
+//        return $result;
     }
 
     new Line($symbol, $period);
