@@ -1,9 +1,9 @@
 <?php
 
-
 define('PATH', dirname(__FILE__));
 date_default_timezone_set("Asia/Shanghai");
-
+require_once __DIR__ . '/vendor/autoload.php';
+require_once PATH . '/conf/config.php';
 require_once PATH . '/lib/Http.php';
 
 $url = "https://www.aicoin.net.cn/api/chart/kline/data/period";
@@ -17,10 +17,16 @@ $postdata = array(
     'period' => '240',
 );
 $timeout = 5;
+//$result = Http::curlPost($url, $queryparas, $postdata, $header, $timeout);
 
-$result = Http::curlPost($url, $queryparas, $postdata, $header, $timeout);
+$db = new MysqliDb (DB_HOST, DB_NAME, DB_PSW, DB_BASE);
 
-var_dump($result);
+$table_name = "k_line_origin";
+$last_block_mysql = $db
+    ->orderBy("id", "Desc")
+    ->getOne($table_name);
+
+var_dump($last_block_mysql);
 exit;
 
 
