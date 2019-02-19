@@ -93,7 +93,8 @@ class Line
         $last_block_redis = $redis->zRange($index_keys, -1, -1);
         $last_time_redis = 0;
         if (!empty($last_block_redis)) {
-            $last_time_redis = json_decode($last_block_redis[0], true)[0];
+//            $last_time_redis = json_decode($last_block_redis[0], true)[0];
+            $last_time_redis = json_decode($last_block_redis[0], true)['time'];
         }
 
         // 取出待计算的 k线数据
