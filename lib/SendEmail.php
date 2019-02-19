@@ -64,7 +64,19 @@ class SendEmail
         $mail->From = EMAIL_NAME;
         $mail->Helo = EMAIL_NAME;
         $mail->setFrom(EMAIL_USERNAME, EMAIL_NAME);// 设置发件人信息，如邮件格式说明中的发件人，这里会显示为Mailer(xxxx@163.com），Mailer是当做名字显示
-        $mail->addAddress($emailAddress, EMAIL_NAME);// 设置收件人信息，如邮件格式说明中的收件人，这里会显示为Liang(yyyy@163.com)
+
+//        $mail->addAddress($emailAddress, EMAIL_NAME);// 设置收件人信息，如邮件格式说明中的收件人，这里会显示为Liang(yyyy@163.com)
+        if (is_array($emailAddress)) {
+            foreach ($emailAddress as $oneEmail) {
+                $mail->addAddress($oneEmail, EMAIL_NAME);
+            }
+        } else {
+            $email_arr = explode(',', $emailAddress);
+            foreach ($email_arr as $oneEmail) {
+                $mail->addAddress($oneEmail, EMAIL_NAME);
+            }
+        }
+
         $mail->IsHTML(true);
         $mail->Subject = $subject;// 邮件标题
         $mail->Body = $content;// 邮件正文
